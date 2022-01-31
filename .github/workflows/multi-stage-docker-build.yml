@@ -52,7 +52,7 @@ jobs:
           path: /tmp
       -
         name: Load Docker Image
-        run: docker load --input tmp/build.tar
+        run: docker load --input /tmp/build.tar
       -
         uses: actions/checkout@v2
       -
