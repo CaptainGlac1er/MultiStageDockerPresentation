@@ -1,0 +1,27 @@
+name: Build Java Multistage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Compile Java Code into Jar
+      run: docker build . --file build.Dockerfile --target multi-stage-docker-build --cache-from multi-stage-docker-build:ci --tag multi-stage-docker-build:ci
+
+  package:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Package Java into runtime
+        run: docker build . --file runnable.Dockerfile --target multi-stage-docker-runnable --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
