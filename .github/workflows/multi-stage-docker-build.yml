@@ -14,15 +14,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Compile Java Code into Jar
-      run: docker build . --file build.Dockerfile --cache-from multi-stage-docker-build:ci --tag multi-stage-docker-build:ci
-    - name: Package for next step
-      run: docker save multi-stage-docker-build:ci | gzip > build.tar.gz
+ #   - name: Compile Java Code into Jar
+#      run: docker build . --file build.Dockerfile --cache-from multi-stage-docker-build:ci --tag multi-stage-docker-build:ci
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./build.Dockerfile
+        tags: multi-stage-docker-build:ci
+        outputs: type=docker,dest=/tmp/myimage.tar
+#   - name: Package for next step
+#     run: docker save multi-stage-docker-build:ci | gzip > build.tar.gz
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
       with:
         name: build-data
-        path: build.tar.gz
+        path: /tmp/build.tar
 
   package:
 
@@ -35,8 +42,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: build-data
+          path: /tmp
       - name: Load Docker Image
-        run: docker load --input build.tar.gz
+        run: docker load --input tmp/build.tar
       - uses: actions/checkout@v2
       - name: Package Java into runtime
         run: docker build . --file runnable.Dockerfile --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
