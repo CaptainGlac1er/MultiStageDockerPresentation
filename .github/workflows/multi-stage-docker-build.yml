@@ -27,7 +27,7 @@ jobs:
         context: .
         file: ./build.Dockerfile
         tags: multi-stage-docker-build:ci
-        outputs: type=docker,dest=/tmp/myimage.tar
+        outputs: type=docker,dest=/tmp/build.tar
 #   - name: Package for next step
 #     run: docker save multi-stage-docker-build:ci | gzip > build.tar.gz
     -
