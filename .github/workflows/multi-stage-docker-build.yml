@@ -47,24 +47,16 @@ jobs:
           name: build-data
           path: /tmp
       -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
         name: Load Docker Image
         run: docker load --input /tmp/build.tar
       -
         uses: actions/checkout@v2
-#      -
-#        name: Package Java into runtime
-#        run: docker build . --file runnable.Dockerfile --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
       -
-        name: Build Runtime
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./runnable.Dockerfile
-          tags: multi-stage-docker-runnable:ci
-          outputs: type=docker,dest=/tmp/package.tar
+        name: Package Java into runtime
+        run: docker build . --file runnable.Dockerfile --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
+      -
+        name: Save Artifact
+        run: docker save --output /tmp/package.tar multi-stage-docker-runnable:ci
       -
         name: Upload Artifact
         uses: actions/upload-artifact@v2
