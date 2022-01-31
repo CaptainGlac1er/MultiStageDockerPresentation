@@ -16,6 +16,13 @@ jobs:
     - uses: actions/checkout@v2
     - name: Compile Java Code into Jar
       run: docker build . --file build.Dockerfile --cache-from multi-stage-docker-build:ci --tag multi-stage-docker-build:ci
+    - name: Package for next step
+      run: docker docker save multi-stage-docker-build:ci | gzip > build.tar.gz
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-data
+        path: build.tar.gz
 
   package:
 
@@ -24,6 +31,12 @@ jobs:
     needs: [build]
 
     steps:
+      - name: Get Build Data
+        uses: actions/download-artifact@v2
+        with:
+          name: build-data
+      - name: Load Docker Image
+        run: docker load --input build.tar.gz
       - uses: actions/checkout@v2
       - name: Package Java into runtime
         run: docker build . --file runnable.Dockerfile --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
