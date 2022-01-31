@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Compile Java Code into Jar
-      run: docker build . --file build.Dockerfile --target multi-stage-docker-build --cache-from multi-stage-docker-build:ci --tag multi-stage-docker-build:ci
+      run: docker build . --file build.Dockerfile --cache-from multi-stage-docker-build:ci --tag multi-stage-docker-build:ci
 
   package:
 
@@ -24,4 +24,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Package Java into runtime
-        run: docker build . --file runnable.Dockerfile --target multi-stage-docker-runnable --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
+        run: docker build . --file runnable.Dockerfile --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
