@@ -17,7 +17,7 @@ jobs:
     - name: Compile Java Code into Jar
       run: docker build . --file build.Dockerfile --cache-from multi-stage-docker-build:ci --tag multi-stage-docker-build:ci
     - name: Package for next step
-      run: docker docker save multi-stage-docker-build:ci | gzip > build.tar.gz
+      run: docker save multi-stage-docker-build:ci | gzip > build.tar.gz
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
       with:
