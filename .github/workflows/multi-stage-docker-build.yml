@@ -16,24 +16,13 @@ jobs:
       name: Checkout Code
       uses: actions/checkout@v2
     -
-      name: Package Java into runtime
+      name: Compile Java into Jar file
       run: docker build . --file Dockerfile --cache-from multi-stage-docker-build:ci --tag multi-stage-docker-build:ci --target builder
     -
-      name: Save Artifact
+      name: Save docker image
       run: docker save --output /tmp/build.tar multi-stage-docker-build:ci
-#    -
-#      name: Set up Docker Buildx
-#      uses: docker/setup-buildx-action@v1
-#    -
-#      name: Build
-#      uses: docker/build-push-action@v2
-#      with:
-#        context: .
-#        file: ./build.Dockerfile
-#        tags: multi-stage-docker-build:ci
-#        outputs: type=docker,dest=/tmp/build.tar
     -
-      name: Upload Artifact
+      name: Send docker image to next stage
       uses: actions/upload-artifact@v2
       with:
         name: build-data
@@ -47,24 +36,24 @@ jobs:
 
     steps:
       -
-        name: Get Build Data
+        name: Get docker image from previous stage
         uses: actions/download-artifact@v2
         with:
           name: build-data
           path: /tmp
       -
-        name: Load Docker Image
+        name: Load docker image into local repo
         run: docker load --input /tmp/build.tar
       -
         uses: actions/checkout@v2
       -
-        name: Package Java into runtime
+        name: Transfer Jar file into end enviroment
         run: docker build . --file Dockerfile --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
       -
-        name: Save Artifact
+        name: Save end docker image
         run: docker save --output /tmp/package.tar multi-stage-docker-runnable:ci
       -
-        name: Upload Artifact
+        name: Upload docker image as an artifact
         uses: actions/upload-artifact@v2
         with:
           name: package-data
@@ -78,13 +67,13 @@ jobs:
 
     steps:
       -
-        name: Get Build Data
+        name: Get docker image from previous stage
         uses: actions/download-artifact@v2
         with:
           name: package-data
           path: /tmp
       -
-        name: Load Docker Image
+        name: Load docker image into local repo
         run: docker load --input /tmp/package.tar
       -
         name: Run container

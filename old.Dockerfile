@@ -5,3 +5,5 @@ COPY --chown=gradle:gradle build.gradle settings.gradle $APP_HOME/
 COPY --chown=gradle:gradle src $APP_HOME/src
 
 RUN gradle --no-daemon build
+
+ENTRYPOINT java -jar /project/build/libs/runnable.jar
