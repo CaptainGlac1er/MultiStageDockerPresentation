@@ -45,8 +45,6 @@ jobs:
         name: Load docker image into local repo
         run: docker load --input /tmp/build.tar
       -
-        uses: actions/checkout@v2
-      -
         name: Transfer Jar file into end enviroment
         run: docker build . --file Dockerfile --cache-from multi-stage-docker-build:ci --cache-from multi-stage-docker-runnable:ci --tag multi-stage-docker-runnable:ci
       -
