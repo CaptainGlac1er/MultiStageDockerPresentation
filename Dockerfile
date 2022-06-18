@@ -6,7 +6,7 @@ COPY --chown=gradle:gradle src $APP_HOME/src
 
 RUN gradle --no-daemon build
 
-FROM openjdk:17-slim
+FROM openjdk:20-slim
 ARG APP_HOME=/project
 COPY --from=builder $APP_HOME/build/libs/runnable.jar app.jar
 
